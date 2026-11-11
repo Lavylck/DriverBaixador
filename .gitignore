@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.spec
+build/
+dist/
+bin/
+*.log
+*.sqlite3*
+*.dpapi
+*.part
+.env
+session-*/

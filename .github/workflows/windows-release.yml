@@ -1,0 +1,102 @@
+name: Compilar e entregar MeuXodo Drive para Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'drive_app/**'
+      - 'tests/**'
+      - 'tools/**'
+      - 'requirements*.txt'
+      - 'main.py'
+      - '.github/workflows/windows-release.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          architecture: 'x64'
+          cache: 'pip'
+          cache-dependency-path: requirements*.txt
+      - name: Instalar dependencias
+        run: python -m pip install -r requirements-dev.txt
+      - name: Executar testes no Windows
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: python -m pytest -q --junitxml=test-results.xml
+      - name: Preparar Inno Setup
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $ISCC = Get-ChildItem -Path "${env:ProgramFiles(x86)}\Inno Setup*\ISCC.exe", "$env:ProgramFiles\Inno Setup*\ISCC.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $ISCC) {
+            $Installer = Join-Path $env:RUNNER_TEMP 'innosetup.exe'
+            Invoke-WebRequest 'https://jrsoftware.org/download.php/is.exe' -OutFile $Installer
+            $Signature = Get-AuthenticodeSignature $Installer
+            if ($Signature.Status -ne 'Valid') { throw 'Assinatura do instalador Inno Setup invalida.' }
+            $Process = Start-Process $Installer -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-' -Wait -PassThru
+            if ($Process.ExitCode -ne 0) { throw 'Falha ao instalar Inno Setup.' }
+          }
+          $ISCC = Get-ChildItem -Path "${env:ProgramFiles(x86)}\Inno Setup*\ISCC.exe", "$env:ProgramFiles\Inno Setup*\ISCC.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $ISCC) { throw 'Compilador Inno Setup nao encontrado.' }
+      - name: Produzir EXE, testar inicializacao e produzir instalador
+        run: ./tools/build-windows.ps1 -SkipTests
+      - name: Arquivar evidencias dos testes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testes-windows-${{ github.run_number }}-${{ github.run_attempt }}
+          path: |
+            test-results.xml
+            dist/windows-build-report.json
+          if-no-files-found: warn
+      - name: Disponibilizar instalador e versao portatil
+        uses: actions/upload-artifact@v4
+        with:
+          name: MeuXodoDrive-Windows-x64
+          path: |
+            dist/MeuXodoDrive-Setup-x64.exe
+            dist/MeuXodoDrive-Windows-x64.zip
+            dist/SHA256SUMS.txt
+            dist/windows-build-report.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publicar release no repositorio privado
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Tag = "drive-v2-$env:GITHUB_RUN_NUMBER-$env:GITHUB_RUN_ATTEMPT"
+          $Notes = @'
+          Aplicativo Windows x64 com instalador e versao portatil.
+
+          Como usar: baixe MeuXodoDrive-Setup-x64.exe e execute-o no Windows 11.
+          O instalador inclui Python, Qt e Rclone; nao exige instalacao manual de dependencias.
+          O login Google ocorre no navegador e concede somente leitura ao Drive.
+
+          Esta e uma pre-release. Os testes automatizados e o teste de inicializacao do EXE
+          foram executados no Windows pelo workflow. OAuth e downloads reais em uma conta
+          Google ainda exigem validacao pelo usuario. Consulte windows-build-report.json
+          para os testes efetivamente executados e SHA256SUMS.txt para os hashes.
+          '@
+          $NotesPath = Join-Path $env:RUNNER_TEMP 'release-notes.md'
+          [IO.File]::WriteAllText($NotesPath, $Notes)
+          gh release create $Tag --repo $env:GH_REPO --target $env:GITHUB_SHA --title "MeuXodo Drive 2.0 - Windows (build $env:GITHUB_RUN_NUMBER)" --prerelease --notes-file $NotesPath ./dist/MeuXodoDrive-Setup-x64.exe ./dist/MeuXodoDrive-Windows-x64.zip ./dist/SHA256SUMS.txt ./dist/windows-build-report.json
+          if ($LASTEXITCODE -ne 0) { throw 'Falha ao publicar release. Os artefatos permanecem disponiveis na execucao do Actions.' }
