@@ -1,4 +1,4 @@
-# MeuXodó Drive 2
+# Driver Downloader 2
 
 Aplicativo local para Windows 11 x64 que baixa arquivos e pastas do Google Drive
 diretamente para o SSD, sem criar ZIPs. Interface em português brasileiro,
@@ -8,10 +8,10 @@ pausa, continuação e cancelamento reais.
 ## Como obter o aplicativo
 
 1. Entre no GitHub com a conta **Lavylck** e abra
-   **[Releases do DriverBaixador](https://github.com/Lavylck/DriverBaixador/releases)**.
-2. Abra a release mais recente cujo nome começa com **MeuXodo Drive 2.0**.
-3. Em **Assets**, baixe **MeuXodoDrive-Setup-x64.exe**.
-4. Execute o instalador no Windows 11 e abra **MeuXodo Drive** pelo menu Iniciar.
+   **[Releases do Driver Downloader](https://github.com/Lavylck/DriverBaixador/releases)**.
+2. Abra a release mais recente cujo nome começa com **Driver Downloader 2.0**.
+3. Em **Assets**, baixe **DriverDownloader-Setup-x64.exe**.
+4. Execute o instalador no Windows 11 e abra **Driver Downloader** pelo menu Iniciar.
 
 O repositório é privado: somente usuários com acesso podem ver a release e seus
 arquivos. Não use `releases/latest`: as primeiras versões são identificadas como
@@ -20,8 +20,8 @@ pré-lançamento e o GitHub pode não apresentá-las nesse atalho.
 **Uma release só existe depois que a compilação termina com sucesso.** Para
 acompanhar ou baixar os mesmos arquivos antes de abrir Releases, visite
 **[Actions](https://github.com/Lavylck/DriverBaixador/actions)**, abra a execução
-**Compilar e entregar MeuXodo Drive para Windows** e, na seção **Artifacts**,
-baixe `MeuXodoDrive-Windows-x64`. O ZIP de artefatos contém o instalador real,
+**Compilar e entregar Driver Downloader para Windows** e, na seção **Artifacts**,
+baixe `DriverDownloader-Windows-x64`. O ZIP de artefatos contém o instalador real,
 a versão portátil, os hashes e o relatório de verificação.
 
 Se a execução estiver vermelha ou não houver release, não há instalador validado
@@ -35,8 +35,8 @@ Este projeto não inclui certificado de assinatura de código: o Windows pode
 exibir informações de editor desconhecido. Em ambiente corporativo, distribua
 uma versão assinada conforme a política da organização.
 
-Alternativa: baixe `MeuXodoDrive-Windows-x64.zip`, extraia a pasta inteira e abra
-`MeuXodoDrive.exe`. Mantenha `_internal`, `bin` e os demais arquivos juntos.
+Alternativa: baixe `DriverDownloader-Windows-x64.zip`, extraia a pasta inteira e abra
+`DriverDownloader.exe`. Mantenha `_internal`, `bin` e os demais arquivos juntos.
 O ZIP serve apenas para distribuir o programa; os downloads do Drive são diretos.
 
 ## Uso
@@ -72,6 +72,12 @@ privados no código. Configurações temporárias necessárias ao Rclone são lo
 e protegidas. Tokens e cabeçalhos de autenticação não devem aparecer nos logs.
 Trocar conta remove a credencial local; revogue a autorização nas configurações
 da conta Google se desejar retirar a permissão concedida.
+
+Atualizações preservam o mesmo identificador e a pasta de instalação
+`%LOCALAPPDATA%\Programs\MeuXodoDrive` para substituir a instalação anterior
+sem mover dados. O nome da pasta é legado; o aplicativo, o executável e os atalhos
+passam a se chamar **Driver Downloader**. Configurações, histórico, downloads e
+credenciais em `%LOCALAPPDATA%\DriveBaixador` não são migrados nem apagados.
 
 O destino sempre é local. Nenhum servidor deste projeto recebe ou guarda os
 vídeos. A API do Google é acessada por HTTPS, com verificação TLS habilitada.
@@ -127,10 +133,14 @@ gera um pacote PyInstaller `--onedir --windowed`, verifica PE x64 e DLLs Qt,
 inicia o executável com `--smoke-test`, compila o instalador, faz uma instalação
 silenciosa temporária e testa a abertura do aplicativo instalado. Depois produz:
 
+Em um computador que já tenha a instalação anterior, o teste de instalação
+temporária é omitido para não sobrescrevê-la; o instalador ainda é compilado e
+validado como PE. O GitHub Actions executa o teste completo em runner isolado.
+
 ```text
-dist/MeuXodoDrive/MeuXodoDrive.exe
-dist/MeuXodoDrive-Setup-x64.exe
-dist/MeuXodoDrive-Windows-x64.zip
+dist/DriverDownloader/DriverDownloader.exe
+dist/DriverDownloader-Setup-x64.exe
+dist/DriverDownloader-Windows-x64.zip
 dist/SHA256SUMS.txt
 dist/windows-build-report.json
 ```

@@ -6,7 +6,7 @@ if (-not [Environment]::Is64BitOperatingSystem) { throw 'Use o Windows de 64 bit
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $ArchiveName = "rclone-v$Version-windows-amd64.zip"
 $BaseUrl = "https://downloads.rclone.org/v$Version"
-$TaskTemp = Join-Path ([IO.Path]::GetTempPath()) ('MeuXodoDrive-' + [Guid]::NewGuid())
+$TaskTemp = Join-Path ([IO.Path]::GetTempPath()) ('DriverDownloader-' + [Guid]::NewGuid())
 New-Item -ItemType Directory -Path $TaskTemp | Out-Null
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

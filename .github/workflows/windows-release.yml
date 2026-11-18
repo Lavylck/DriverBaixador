@@ -1,4 +1,4 @@
-name: Compilar e entregar MeuXodo Drive para Windows
+name: Compilar e entregar Driver Downloader para Windows
 
 on:
   workflow_dispatch:
@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - 'drive_app/**'
+      - 'assets/icons/**'
+      - 'README.md'
       - 'tests/**'
       - 'tools/**'
       - 'requirements*.txt'
@@ -69,10 +71,10 @@ jobs:
       - name: Disponibilizar instalador e versao portatil
         uses: actions/upload-artifact@v4
         with:
-          name: MeuXodoDrive-Windows-x64
+          name: DriverDownloader-Windows-x64
           path: |
-            dist/MeuXodoDrive-Setup-x64.exe
-            dist/MeuXodoDrive-Windows-x64.zip
+            dist/DriverDownloader-Setup-x64.exe
+            dist/DriverDownloader-Windows-x64.zip
             dist/SHA256SUMS.txt
             dist/windows-build-report.json
           if-no-files-found: error
@@ -87,7 +89,7 @@ jobs:
           $Notes = @'
           Aplicativo Windows x64 com instalador e versao portatil.
 
-          Como usar: baixe MeuXodoDrive-Setup-x64.exe e execute-o no Windows 11.
+          Como usar: baixe DriverDownloader-Setup-x64.exe e execute-o no Windows 11.
           O instalador inclui Python, Qt e Rclone; nao exige instalacao manual de dependencias.
           O login Google ocorre no navegador e concede somente leitura ao Drive.
 
@@ -98,5 +100,5 @@ jobs:
           '@
           $NotesPath = Join-Path $env:RUNNER_TEMP 'release-notes.md'
           [IO.File]::WriteAllText($NotesPath, $Notes)
-          gh release create $Tag --repo $env:GH_REPO --target $env:GITHUB_SHA --title "MeuXodo Drive 2.0 - Windows (build $env:GITHUB_RUN_NUMBER)" --prerelease --notes-file $NotesPath ./dist/MeuXodoDrive-Setup-x64.exe ./dist/MeuXodoDrive-Windows-x64.zip ./dist/SHA256SUMS.txt ./dist/windows-build-report.json
+          gh release create $Tag --repo $env:GH_REPO --target $env:GITHUB_SHA --title "Driver Downloader 2.0 - Windows (build $env:GITHUB_RUN_NUMBER)" --prerelease --notes-file $NotesPath ./dist/DriverDownloader-Setup-x64.exe ./dist/DriverDownloader-Windows-x64.zip ./dist/SHA256SUMS.txt ./dist/windows-build-report.json
           if ($LASTEXITCODE -ne 0) { throw 'Falha ao publicar release. Os artefatos permanecem disponiveis na execucao do Actions.' }

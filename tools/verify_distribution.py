@@ -29,7 +29,7 @@ def verify(package: Path, smoke: bool = False, installer: Path | None = None,
            install_smoke: bool = False) -> dict:
     if not package.is_dir():
         raise ValueError("A pasta do aplicativo não foi produzida.")
-    app = package / "MeuXodoDrive.exe"
+    app = package / "DriverDownloader.exe"
     rclone = package / "bin" / "rclone.exe"
     if pe_machine(app) != 0x8664 or pe_machine(rclone) != 0x8664:
         raise ValueError("O aplicativo e o Rclone devem ser executáveis Windows x64.")
@@ -38,6 +38,7 @@ def verify(package: Path, smoke: bool = False, installer: Path | None = None,
         if not any(package.rglob(name)):
             raise ValueError(f"Dependência ausente: {name}")
     for name in ("README.md", "LICENSE", "THIRD_PARTY.md", "bin/RCLONE-LICENSE.txt",
+                 "_internal/assets/icons/driver_downloader_icon.png",
                  "licenses/LGPL-3.0.txt", "licenses/GPL-3.0.txt"):
         if not (package / name).is_file():
             raise ValueError(f"Arquivo obrigatório ausente: {name}")
@@ -50,6 +51,7 @@ def verify(package: Path, smoke: bool = False, installer: Path | None = None,
         "app_sha256": app_digest,
         "startup_smoke_test": "not_run", "real_google_oauth_test": "not_run",
         "real_google_download_test": "not_run",
+        "installer_install_and_startup_test": "not_run",
     }
     if smoke:
         if os.name != "nt":
@@ -72,7 +74,7 @@ def verify(package: Path, smoke: bool = False, installer: Path | None = None,
         if install_smoke:
             if os.name != "nt":
                 raise ValueError("O teste do instalador exige Windows real.")
-            with tempfile.TemporaryDirectory(prefix="meuxodo-installer-") as temporary:
+            with tempfile.TemporaryDirectory(prefix="driver-downloader-installer-") as temporary:
                 installed = Path(temporary) / "installed"
                 log = Path(temporary) / "install.log"
                 subprocess.run([str(installer.resolve()), "/VERYSILENT", "/SUPPRESSMSGBOXES",

@@ -1,4 +1,22 @@
-# Validação — MeuXodó Drive 2
+# Validação — Driver Downloader 2
+
+## Nova identidade
+
+Execução local em Windows 11 x64 em 18/11/2026: **54 testes passaram** com
+OpenSSL disponível no PATH. O build PyInstaller (Python 3.13.17) iniciou o EXE
+com `--smoke-test`; o instalador Inno Setup 6.7.3 compilou e foi verificado
+como PE. O teste de instalação silenciosa não foi executado localmente porque
+há uma instalação anterior no mesmo `AppId`; será executado no runner isolado.
+OAuth e downloads reais com conta Google não foram executados.
+
+Os nomes do aplicativo e dos artefatos mudaram; o `AppId` do instalador, sua
+pasta de instalação legada e `%LOCALAPPDATA%\DriveBaixador` permanecem os mesmos
+para conservar atualizações, preferências, histórico e credenciais OAuth.
+O build Windows verifica o recurso PNG incluído no pacote e usa o ICO oficial
+no executável e instalador. Em máquinas com instalação anterior, o teste local
+de instalação é omitido; o runner limpo de Actions o executa.
+
+## Histórico de validação anterior
 
 Execução local em 11/11/2026: Python 3.12.14, PySide6/Qt 6.12.0,
 Requests 2.34.2, Linux x64. **51 testes passaram e 1 foi pulado** (DPAPI exclusivo
