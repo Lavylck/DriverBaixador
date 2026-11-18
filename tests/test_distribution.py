@@ -52,3 +52,13 @@ def test_windows_data_directory_remains_compatible():
     if os.name == "nt":
         from drive_app.storage import app_directory
         assert app_directory() == Path(os.environ["LOCALAPPDATA"]) / "DriveBaixador"
+
+
+def test_distribution_version_matches_application():
+    from drive_app import __version__
+
+    root = Path(__file__).resolve().parents[1]
+    assert __version__ == "2.1.0"
+    assert f'#define AppVersion "{__version__}"' in (root / "tools/installer.iss").read_text(encoding="utf-8")
+    assert f"'/DAppVersion={__version__}'" in (root / "tools/build-windows.ps1").read_text(encoding="utf-8")
+    assert f'version="{__version__}.0"' in (root / "tools/windows.manifest").read_text(encoding="utf-8")

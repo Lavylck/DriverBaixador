@@ -38,7 +38,7 @@ if (-not $PortableOnly) {
             Sort-Object FullName -Descending | Select-Object -First 1 -ExpandProperty FullName
     }
     if (-not $ISCC) { throw 'Inno Setup 6 nao encontrado. Instale-o para gerar o Setup, ou use -PortableOnly.' }
-    & $ISCC '/DAppVersion=2.0.0' "/DProjectRoot=$ProjectRoot" .\tools\installer.iss
+    & $ISCC '/DAppVersion=2.1.0' "/DProjectRoot=$ProjectRoot" .\tools\installer.iss
     if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar o instalador.' }
     $InstallerCheck = @($Package, '--smoke-test', '--installer', '.\dist\DriverDownloader-Setup-x64.exe', '--report', '.\dist\windows-build-report.json')
     # O mesmo AppId atualiza a instalação existente: nunca executar o teste de instalação sobre ela.

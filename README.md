@@ -1,4 +1,4 @@
-# Driver Downloader 2
+# Driver Downloader v2.1.0
 
 Aplicativo local para Windows 11 x64 que baixa arquivos e pastas do Google Drive
 diretamente para o SSD, sem criar ZIPs. Interface em português brasileiro,
@@ -8,14 +8,14 @@ pausa, continuação e cancelamento reais.
 ## Como obter o aplicativo
 
 1. Entre no GitHub com a conta **Lavylck** e abra
-   **[Releases do Driver Downloader](https://github.com/Lavylck/DriverBaixador/releases)**.
-2. Abra a release mais recente cujo nome começa com **Driver Downloader 2.0**.
+   **[versão estável do Driver Downloader](https://github.com/Lavylck/DriverBaixador/releases/latest)**.
+2. Confira a release **Driver Downloader v2.1.0**.
 3. Em **Assets**, baixe **DriverDownloader-Setup-x64.exe**.
 4. Execute o instalador no Windows 11 e abra **Driver Downloader** pelo menu Iniciar.
 
 O repositório é privado: somente usuários com acesso podem ver a release e seus
-arquivos. Não use `releases/latest`: as primeiras versões são identificadas como
-pré-lançamento e o GitHub pode não apresentá-las nesse atalho.
+arquivos. O link `/releases/latest` aponta para a versão estável, não para
+compilações de pré-lançamento.
 
 **Uma release só existe depois que a compilação termina com sucesso.** Para
 acompanhar ou baixar os mesmos arquivos antes de abrir Releases, visite
