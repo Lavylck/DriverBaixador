@@ -1,3 +1,3 @@
-"""MeuXodó Drive: downloads locais e somente leitura no Google Drive."""
+"""Driver Downloader: downloads locais e somente leitura no Google Drive."""
 
 __version__ = "2.0.0"

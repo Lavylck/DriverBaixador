@@ -16,11 +16,12 @@ def main() -> int:
     from PySide6.QtCore import QLockFile, QTimer
     from PySide6.QtGui import QFont
     from PySide6.QtWidgets import QApplication, QMessageBox
-    from drive_app.gui import Window
+    from drive_app.gui import Window, official_icon
 
     app = QApplication(sys.argv)
-    app.setApplicationName("MeuXodó Drive")
-    app.setOrganizationName("MeuXodo")
+    app.setApplicationName("Driver Downloader")
+    app.setOrganizationName("DriverDownloader")
+    app.setWindowIcon(official_icon())
     app.setStyle("Fusion")
     app.setFont(QFont("Segoe UI", 10))
     temporary = None
@@ -30,7 +31,7 @@ def main() -> int:
             def snapshot(self): return {"jobs": [], "files": [], "history": []}
             def shutdown(self): pass
             def set_limits(self, concurrency, bandwidth_limit): pass
-        temporary = tempfile.TemporaryDirectory(prefix="meuxodo-smoke-")
+        temporary = tempfile.TemporaryDirectory(prefix="driver-downloader-smoke-")
         root, manager, auth = Path(temporary.name), SmokeManager(), None
     else:
         from drive_app.runtime import app_directory, create_runtime, prepare_root
@@ -40,11 +41,11 @@ def main() -> int:
             lock = QLockFile(str(root / "app.lock"))
             lock.setStaleLockTime(0)
             if not lock.tryLock(0):
-                QMessageBox.information(None, "MeuXodó Drive", "O aplicativo já está aberto nesta conta do Windows.")
+                QMessageBox.information(None, "Driver Downloader", "O aplicativo já está aberto nesta conta do Windows.")
                 return 0
             manager, auth = create_runtime(root)
         except Exception:
-            QMessageBox.critical(None, "MeuXodó Drive", "Não foi possível preparar o aplicativo. Confira a pasta local e os registros de instalação.")
+            QMessageBox.critical(None, "Driver Downloader", "Não foi possível preparar o aplicativo. Confira a pasta local e os registros de instalação.")
             if lock: lock.unlock()
             return 1
     window = Window(root, manager, auth)

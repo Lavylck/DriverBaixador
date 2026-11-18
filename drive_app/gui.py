@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import math
+import sys
 import threading
 from pathlib import Path
 
@@ -18,6 +19,12 @@ from PySide6.QtWidgets import (
 STATES = {"queued": "Na fila", "planning": "Verificando acesso", "running": "Baixando",
           "paused": "Pausado", "cancelled": "Cancelado", "completed": "Concluído", "error": "Interrompido",
           "verifying": "Verificando integridade", "retrying": "Tentando novamente", "pausing": "Pausando…", "cancelling": "Cancelando…", "checking": "Verificando…"}
+
+
+def official_icon() -> QIcon:
+    """Localiza o PNG tanto no código-fonte como no bundle PyInstaller."""
+    root = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
+    return QIcon(str(root / "assets" / "icons" / "driver_downloader_icon.png"))
 
 
 def byte_text(value) -> str:
@@ -236,10 +243,10 @@ class Window(QMainWindow):
         self.closing = False
         self.can_close = False
         self._jobs_signature = None
-        self.setWindowTitle("MeuXodó Drive")
+        self.setWindowTitle("Driver Downloader")
         self.resize(1240, 850)
         self.setMinimumSize(940, 680)
-        self.setWindowIcon(icon("logo", "#989bff", 40))
+        self.setWindowIcon(official_icon())
         container = QWidget(objectName="page")
         self.setCentralWidget(container)
         layout = QHBoxLayout(container)
@@ -304,9 +311,9 @@ class Window(QMainWindow):
         box.setSpacing(8)
         brand_row = QHBoxLayout()
         logo = QLabel()
-        logo.setPixmap(icon("logo", "#979aff", 32).pixmap(32, 32))
+        logo.setPixmap(official_icon().pixmap(32, 32))
         brand_row.addWidget(logo)
-        brand_row.addWidget(QLabel("MeuXodó", objectName="brand"), 1)
+        brand_row.addWidget(QLabel("Driver Downloader", objectName="brand"), 1)
         box.addLayout(brand_row)
         tagline = QLabel("DRIVE  /  DOWNLOADS", objectName="eyebrow")
         box.addWidget(tagline)

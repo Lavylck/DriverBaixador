@@ -6,9 +6,9 @@ from pathlib import Path
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QLabel
 
-from drive_app.gui import DataTable, Window, byte_text, eta_text, progress_percent
+from drive_app.gui import DataTable, Window, byte_text, eta_text, official_icon, progress_percent
 
 
 class FakeManager:
@@ -63,6 +63,11 @@ def test_download_navigation_pause_resume_cancel(tmp_path):
     window = Window(tmp_path, manager)
     window.show()
     application.processEvents()
+    assert window.windowTitle() == "Driver Downloader"
+    assert not official_icon().isNull()
+    assert not window.windowIcon().isNull()
+    assert not official_icon().pixmap(32, 32).isNull()
+    assert any(label.text() == "Driver Downloader" for label in window.findChildren(QLabel))
     assert not window.grab().isNull()
     window.url.setText("https://drive.google.com/drive/folders/abcde")
     window.destination.setText(str(tmp_path / "downloads"))

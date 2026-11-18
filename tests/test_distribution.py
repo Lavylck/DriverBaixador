@@ -1,5 +1,7 @@
 """O verificador deve rejeitar artefatos incompletos antes de publicar uma release."""
 import struct
+import os
+from pathlib import Path
 
 import pytest
 
@@ -25,14 +27,28 @@ def test_rejects_text_renamed_to_exe(tmp_path):
 
 
 def test_rejects_wrong_architecture(tmp_path):
-    write_test_pe(tmp_path / "MeuXodoDrive.exe", 0x14C)
+    write_test_pe(tmp_path / "DriverDownloader.exe", 0x14C)
     write_test_pe(tmp_path / "bin/rclone.exe")
     with pytest.raises(ValueError, match="x64"):
         verify(tmp_path)
 
 
 def test_rejects_missing_qt_dependencies(tmp_path):
-    write_test_pe(tmp_path / "MeuXodoDrive.exe")
+    write_test_pe(tmp_path / "DriverDownloader.exe")
     write_test_pe(tmp_path / "bin/rclone.exe")
     with pytest.raises(ValueError, match="Qt6Core.dll"):
         verify(tmp_path)
+
+
+def test_official_icons_are_valid():
+    icons = Path(__file__).resolve().parents[1] / "assets" / "icons"
+    assert (icons / "driver_downloader_icon.png").read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
+    ico = (icons / "driver_downloader_icon.ico").read_bytes()
+    assert ico[:4] == b"\x00\x00\x01\x00"
+    assert struct.unpack_from("<H", ico, 4)[0] > 0
+
+
+def test_windows_data_directory_remains_compatible():
+    if os.name == "nt":
+        from drive_app.storage import app_directory
+        assert app_directory() == Path(os.environ["LOCALAPPDATA"]) / "DriveBaixador"
